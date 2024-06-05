@@ -238,24 +238,28 @@ class StockCrawler:
     '''
     실시간 국내 주식 가격 크롤링
     '''
-    def now_stock_price_crawler(self,date):
+    def now_stock_price_crawler(self, date):
         df_kr_price = pd.DataFrame()
+        try:
+            kospi_df = stock.get_market_ohlcv(date, market="KOSPI")
+            kosdaq_df = stock.get_market_ohlcv(date, market="KOSDAQ")
+            df_kr_price = pd.concat([kospi_df, kosdaq_df])
+            df_kr_price["날짜"] = date
+            df_kr_price.reset_index(inplace=True)
 
-        df_kr_price = pd.concat([stock.get_market_ohlcv(date,market="KOSPI") , stock.get_market_ohlcv(date,market="KOSDAQ")])
-        df_kr_price["날짜"] = date
-        df_kr_price.reset_index(inplace=True)
-
-        df_kr_price.rename(columns={
-            '날짜': 'date',
-            '시가': 'open',
-            '고가': 'high',
-            '저가': 'low',
-            '종가': 'close',
-            '거래량': 'volume',
-            '등락률': 'change_rate',
-            '티커': 'ticker'
-        }, inplace=True)
-        df_kr_price = df_kr_price[['date', 'ticker', 'open', 'high', 'low', 'close', 'volume', 'change_rate']]
+            df_kr_price.rename(columns={
+                '날짜': 'date',
+                '시가': 'open',
+                '고가': 'high',
+                '저가': 'low',
+                '종가': 'close',
+                '거래량': 'volume',
+                '등락률': 'change_rate',
+                '티커': 'ticker'
+            }, inplace=True)
+            df_kr_price = df_kr_price[['date', 'ticker', 'open', 'high', 'low', 'close', 'volume', 'change_rate']]
+        except Exception as e:
+            print(f"Error fetching stock data for date {date}: {e}")
         return df_kr_price
 # s = StockCrawler()
 # print(s.kr_stock_info_crawler())

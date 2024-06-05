@@ -119,16 +119,16 @@ class CreateAggregateTable():
     현재 주식 가격 
     '''
     def get_now_stock_price(self):
-        # end_date = self.connector.default_query(f"select max(date) from stock_price;").values[0][0]
-        # dff = self.connector.default_query(f"select pr.ticker,info.company_name, pr.close,pr.change_rate from stock_price as pr join stock_info as info on pr.ticker = info.ticker where pr.date = '{end_date}' order by pr.change_rate desc limit {topN}; ")
-        # dff["ranking"]  = dff.index +1
         stock_info_df = self.connector.default_query(f"select id as stock_id, ticker from stocks;")
         """국내 종목 주가 업데이트"""
         crawler = StockCrawler()
         end_date = datetime.datetime.now().strftime('%Y-%m-%d')
         df_kr_price = crawler.now_stock_price_crawler(end_date)
+        if df_kr_price.empty:
+            print("No stock data fetched, returning empty DataFrame.")
+            return df_kr_price
         df_kr_price = pd.merge(left=stock_info_df, right=df_kr_price, how="inner", on="ticker")
-        df_kr_price.drop("ticker",axis=1,inplace=True)
+        df_kr_price.drop("ticker", axis=1, inplace=True)
         return df_kr_price
 
     def related_stock(self):

@@ -154,6 +154,7 @@ def update_1D():
 
 def update_1M():
     print("start update_1M")
+    crawler = StockCrawler()
     connector = MySQLDataConnector(user='root',
                                    password='1234',
                                    host='localhost',
@@ -179,7 +180,7 @@ def schedule():
         now = datetime.datetime.now()
         current_time = now.time()
         current_weekday = now.weekday()
-    
+
         # 매일 00:01에 update_1D 실행
         if current_time >= datetime.time(0, 1) and current_time < datetime.time(0, 2):
             update_1D()
