@@ -24,7 +24,7 @@
         var category = $('#categorySelect').val();   // 선택된 카테고리 값을 가져옵니다.
         if (keyword.length >= 2) {
           $.ajax({
-            url: 'http://localhost:8080/search/autocomplete',
+            url: 'http://localhost:8081/search/autocomplete',
             data: {
               keyword: keyword,
               category: category  // 카테고리도 요청에 포함합니다.
