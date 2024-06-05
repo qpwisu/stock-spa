@@ -13,21 +13,21 @@ public class StockPrice {
   @Column(name = "id")
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private Long id;
   @Column(name = "date")
   private java.sql.Date date;
   @Column(name = "open")
-  private double open;
+  private Double open;
   @Column(name = "high")
-  private double high;
+  private Double high;
   @Column(name = "low")
-  private double low;
+  private Double low;
   @Column(name = "close")
-  private double close;
+  private Double close;
   @Column(name = "volume")
-  private long volume;
+  private Long volume;
   @Column(name = "change_rate")
-  private double changeRate;
+  private Double changeRate;
   @ManyToOne
   @JoinColumn(name = "stock_id", referencedColumnName = "id", nullable = false)
   private Stocks stock;

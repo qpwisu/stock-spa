@@ -13,7 +13,7 @@ public class StockPriceNow {
 
   @Id
   @Column(name = "stock_id")
-  private Long stockId;
+  private long stockId;
   @OneToOne(fetch = FetchType.LAZY)
   @MapsId
   @JoinColumn(name = "stock_id", referencedColumnName = "id")
@@ -21,15 +21,15 @@ public class StockPriceNow {
   @Column(name = "date")
   private LocalDateTime date;
   @Column(name = "open")
-  private double open;
+  private Double open;
   @Column(name = "high")
-  private double high;
+  private Double high;
   @Column(name = "low")
-  private double low;
+  private Double low;
   @Column(name = "close")
-  private double close;
+  private Double close;
   @Column(name = "volume")
-  private long volume;
+  private Double volume;
   @Column(name = "change_rate")
-  private double changeRate;
+  private Double changeRate;
 }
