@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+</head>
+<body>
+<div th:fragment="search">
+  <div>
+    <form id="searchForm" class="search-bar">
+      <select id="categorySelect" class="select-period">
+        <option value="ticker">티커</option>
+        <option value="companyName" selected>종목명</option>
+        <option value="theme">테마</option>
+      </select>
+      <div class="autocomplete-wrapper">
+        <input type="text" id="searchInput" placeholder="입력" class="search-input">
+        <ul id="autocompleteResults"></ul>
+      </div>
+    </form>
+  </div>
+  <script>
+    $(document).ready(function() {
+      $('#searchInput').on('input', function() {
+        var keyword = $(this).val();
+        var category = $('#categorySelect').val();   // 선택된 카테고리 값을 가져옵니다.
+        if (keyword.length >= 2) {
+          $.ajax({
+            url: 'http://localhost:8080/search/autocomplete',
+            data: {
+              keyword: keyword,
+              category: category  // 카테고리도 요청에 포함합니다.
+            },
+            success: function(data) {
+              var items = '';
+              $.each(data, function(i, entity) {
+                items += '<li><span class="category">' + entity.category + '</span> | <span class="keyword">' + entity.keyword + '</span></li>';
+              });
+              $('#autocompleteResults').html(items).show();
+            }
+          });
+        } else {
+          $('#autocompleteResults').hide(); // 입력이 적을 때는 결과를 숨김
+        }
+      });
+
+      $('#autocompleteResults').on('click', 'li', function() {
+        var keywordText = $(this).find('.keyword').text();
+        var categoryText = $(this).find('.category').text();
+        var targetUrl = '/search?category=' + encodeURIComponent(categoryText) + '&keyword=' + encodeURIComponent(keywordText);
+        window.location.href = targetUrl;
+        $('#searchInput').val(keywordText);
+        $('#autocompleteResults').hide();
+      });
+    });
+
+  </script>
+</div>
+
+</body>
+</html>

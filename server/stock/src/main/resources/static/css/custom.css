@@ -1,0 +1,467 @@
+body, body>div[id^=root], head, html {
+    height: 100%;
+}
+a{
+    color: black;
+}
+
+.flex-item {
+    flex: 1;             /* 모든 flex 아이템에 동일한 비율로 공간 할당 */
+    margin: 10px;        /* 각 아이템 주변에 여백을 추가 */
+    padding: 10px;       /* 내부 여백 */
+    background-color: #f8f8f8; /* 배경색 설정 */
+    border: 1px solid #ccc; /* 테두리 설정 */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 그림자 효과 */
+}
+.container-root-layout {
+    max-width: 1500px;
+    margin: 0 auto;
+    height: 100%;
+}
+.table-scroll {
+    max-height: 700px;
+    overflow-y: auto;
+    width: 100%;  // 필요에 따라 조정 가능
+}
+
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 17px;
+    min-width: 400px;  // 필요에 따라 조정
+}
+
+.container{
+    max-width: 1600px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.total-table{
+    width:400px;
+    /*height: 600px;*/
+    font-size: 12px;
+}
+.container-column{
+    display: flex;
+    flex-direction: column;
+}
+.container-content{
+    max-height: 700px;
+    overflow-y: auto;
+
+    max-width: 1600px;
+    font-size: 18px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.05);
+    padding: 17px 18px 20px;
+    margin: 10px;
+}
+.styled-table th,
+.styled-table td {
+    padding: 12px 15px;
+}
+.styled-table th{
+    white-space: nowrap; /* 줄바꿈 없음 */
+}
+.styled-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+.styled-table tbody tr.active-row {
+    font-weight: bold;
+    color: black;
+}
+.styled-table tbody tr:last-of-type {
+    border-bottom: 2px solid cornflowerblue;
+}
+
+.select-period{
+    padding: 8px;
+    border-radius: 30px;
+    margin-left: 10px;
+}
+.search-bar {
+    display: flex;
+    max-width: 800px;
+    margin: 30px auto 10px auto;
+    align-items: center;
+    background-color: #ffffff;
+    border-radius: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 8px;
+    font-weight: bold;
+}
+.styled-table {
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 17px;
+    font-family: sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+.styled-table thead tr {
+    background-color: cornflowerblue;
+    color: #ffffff;
+    text-align: left;
+}
+.search-select {
+    border: none;
+    outline: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    margin-right: 8px;
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+}
+
+.search-input {
+    border: none;
+    outline: none;
+    padding: 8px 16px;
+    width: 100%;
+    font-size: 16px;
+    border-radius: 20px;
+}
+
+.search-button {
+    width: 80px;
+    background-color: #4e6ef2;
+    color: white;
+    border: none;
+    outline: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
+}
+
+.search-button:hover {
+    background-color: #4056c8;
+}
+
+body{
+    background-color:#f4f6f8;
+}
+hr {
+    border: none;
+    height: 3px;
+    background-color: dodgerblue; /* 구분선의 색상 */
+}
+.font-bold{
+    font-weight: bold;
+}
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+}
+.box-row{
+    display:flex;
+}
+.box-br{
+    border-right: 1px solid #000;
+}
+.box-pr{
+    padding-right: 10px;
+}
+.box-pl{
+    padding-left: 10px;
+}
+.box-prl{
+    padding-right: 10px;
+    padding-left: 10px;
+}
+.login-form{
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+    width: 600px;
+    margin: 60px auto;
+}
+.autocomplete-wrapper {
+    position: relative; /* 자식 요소를 상대적 위치에 배치하기 위해 */
+    width: 100%; /* 또는 부모 컨테이너에 맞는 크기 */
+}
+
+#searchInput {
+    width: 100%; /* 컨테이너 전체 너비 */
+    box-sizing: border-box; /* 패딩과 테두리를 너비에 포함 */
+}
+
+#autocompleteResults {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    background: white;
+    position: absolute;
+    width: 100%; /* 입력 필드와 동일한 너비 */
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 선택적: 그림자 추가 */
+    z-index: 1000; /* 다른 요소 위에 표시되도록 */
+    display: none; /* 초기에는 숨겨짐 */
+}
+
+#autocompleteResults li {
+    padding: 8px;
+    cursor: pointer;
+}
+
+#autocompleteResults li:hover {
+    background-color: #f0f0f0;
+}
+.select-option{
+    width: 140px;
+}
+.login-label {
+    display: block;
+    /*margin-bottom: 10px;*/
+    color: dodgerblue;
+}
+
+.login-input[type="text"],
+.login-input[type="password"] {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.login-button {
+    background-color: cornflowerblue;
+    color: white;
+    border: none;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+.del-btn {
+    background-color: orangered;
+    font-weight: bold;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+.back-button {
+    background-color: dimgrey;
+    color: white;
+    border: none;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.login-button:hover {
+    background-color: #5a87d6;
+}
+
+select{
+    text-align: center;
+}
+
+.nav-btn {
+    background-color: cornflowerblue;
+    font-weight: bold;
+    color:white;
+    border: none;
+    height: 40px;
+    width: 100px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.nav-btn:hover, .nav-btn:focus, .nav-btn:active:focus {
+    background-color: lightsteelblue;
+    animation: jelly 0.5s;
+}
+
+.search-btn {
+    background-color: cornflowerblue;
+    color: white;
+    font-weight: bold;
+    border: none;
+    height: 40px;
+    width: 100px;
+}
+
+.search-btn:hover, .search-btn:focus, .search-btn:active:focus {
+    background-color: white;
+    animation: jelly 0.5s;
+}
+
+.icon-btn{
+    background-color: unset;
+    border: none;
+}
+
+.icon-btn:hover, .icon-btn:focus, .icon-btn:active:focus {
+    border: none;
+    animation: jelly 0.5s;
+}
+
+.user-btn {
+    background-color: cornflowerblue;
+    font-weight: bold;
+    border: none;
+    height: 40px;
+    width: 100px;
+}
+
+.user-btn:hover, .user-btn:focus, .user-btn:active:focus {
+    background-color: lightskyblue;
+    animation: jelly 0.5s;
+}
+
+.post-btn {
+    background-color: white ;
+    font-weight: bold;
+    border: 3px solid cornflowerblue ;
+    height: 40px;
+    width: 100px;
+}
+
+.post-btn:hover, .post-btn:focus, .post-btn:active:focus {
+    background-color: cornflowerblue;
+    animation: jelly 0.5s;
+}
+
+.edit-btn {
+    background-color: cornflowerblue;
+    color: white;
+    border: none;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.edit-btn:hover, .edit-btn:focus, .edit-btn:active:focus {
+    background-color: lightskyblue;
+    animation: jelly 0.5s;
+}
+
+.stock-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.stock-table th, .stock-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+}
+
+.stock-table th {
+    background-color: #f9f9f9;
+    font-weight: bold;
+}
+
+.stock-table td {
+    background-color: #fff;
+}
+
+.del-btn:hover, .del-btn:focus, .del-btn:active:focus {
+    background-color: #CC0000;
+    animation: jelly 0.5s;
+}
+
+.select-btn {
+    background-color: deepskyblue;
+    font-weight: bold;
+    margin: 0px 30px;
+    border: none;
+    height: 40px;
+    width: 130px;
+}
+
+.select-btn:hover, .select-btn:focus, .select-btn:active:focus {
+    background-color: dodgerblue;
+    animation: jelly 0.5s;
+}
+
+.selected-btn {
+    background-color: cornflowerblue;
+    font-weight: bold;
+    margin: 0px 30px;
+    border: none;
+    height: 40px;
+    width: 130px;
+}
+
+.selected-btn:hover, .selected-btn:focus, .selected-btn:active:focus {
+    background-color: dodgerblue;
+    animation: jelly 0.5s;
+}
+
+@keyframes jelly {
+    25% {
+        transform: scale(0.9, 1.1);
+    }
+
+    50% {
+        transform: scale(1.1, 0.9);
+    }
+
+    75% {
+        transform: scale(0.95, 1.05);
+    }
+}
+
+.user-form {
+    width: max-content;
+    height: max-content;
+    background-color: lightgoldenrodyellow;
+    /*border: solid 1px yellow;*/
+    border-radius: 30px;
+    padding: 50px 50px 30px 50px;
+}
+
+.user-form>div>label {
+    font-weight: bold;
+}
+
+.user-form>div>input {
+    width: 300px;
+}
+
+.error-input {
+    border-color: red;
+}
+
+.error-div {
+    color: red;
+}
+
+.nav-link.active {
+    font-weight: bold;
+}
+
+.small-img {
+    width: 30px;
+    height: 30px;
+}
+
+.notice-tr {
+    background-color: white;
+}

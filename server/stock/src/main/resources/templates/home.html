@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/header.html :: head"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+<link rel="stylesheet" href="/css/custom.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<body>
+    <div th:replace="fragments/header.html :: header ('home')"></div>
+    <div th:class="container-root-layout">
+        <div th:class="container-column">
+            <div th:replace="fragments/search.html :: search"></div>
+
+            <div th:class="container">
+                <div th:class="container-content" sec:authorize="isAuthenticated()">
+                    <h5>종목명 즐겨찾기</h5>
+                    <table class="styled-table total-table">
+                        <thead>
+                        <tr>
+                            <th>종목명</th>
+                            <th>전날대비</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr class="active-row" th:each="fav : ${favoriteStock}">
+                            <td><a th:href="@{/search(category='stock', keyword=${fav.stock.companyName})}" th:text="${fav.stock.companyName}"></a></td>
+                            <td th:text="${fav.stock.stockPriceNow.changeRate}"></td>
+                            <td><button type="button" class="icon-btn" th:onclick="|deleteStockLike(${fav.stock.id})|">삭제</button></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div th:class="container-content" sec:authorize="isAuthenticated()">
+                    <h5>테마 즐겨찾기</h5>
+                    <table class="styled-table total-table">
+                        <thead>
+                        <tr>
+                            <th>테마</th>
+                            <th>삭제</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr class="active-row" th:each="fav : ${favoriteTheme}">
+                            <td><a th:href="@{/search(category='theme', keyword=${fav.theme.themeName})}" th:text="${fav.theme.themeName}"></a></td>
+                            <td><button type="button" class="icon-btn" th:onclick="|deleteThemeLike(${fav.theme.id})|">삭제</button></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <div th:class="container">
+                <div th:class="container-content">
+                    <h5>실시간 급상승 종목</h5>
+                    <table  class="styled-table total-table">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>종목명</th>
+                            <th>전날대비</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr  class="active-row"  th:each="t : ${top_now_stock_price}">
+                            <td><a th:href="@{/search(category=${'companyName'}, keyword=${t.stock.companyName})}" th:text="${t.stock.companyName}"></a></td>
+                            <td th:text="${t.changeRate}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div th:class="container-content">
+                    <h5>실시간 급상승 테마</h5>
+                    <table  class="styled-table total-table">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>테마</th>
+                            <th>전날대비</th>
+                            <th>종목수</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr  class="active-row"  th:each="t : ${top_theme_now_stock_price}">
+                            <td><a th:href="@{/search(category=${'theme'}, keyword=${t.theme.themeName})}" th:text="${t.theme.themeName}"></a></td>
+                            <td th:text="${t.averageChangeRate}"></td>
+                            <td th:text="${t.cnt}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+
+
+            <form th:class="container">
+                <select th:class="select-period" id="periodSelect" onchange="filterTable()">
+                    <option value="1">1 Day</option>
+                    <option value="3" selected>3 Days</option>
+                    <option value="7">7 Days</option>
+                    <option value="30">30 Days</option>
+                </select>
+            </form>
+
+            <div th:class="container">
+                <div th:class="container-content">
+                    <h5>기간별 블로그 종목명 언급량</h5>
+                    <table id="tableBody" class="styled-table total-table">
+                        <colgroup>
+                            <col style="width: 10%;">
+                            <col style="width: 60%;">
+                            <col style="width: 10%;">
+                            <col style="width: 10%;">
+                            <col style="width: 10%;">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>랭킹</th>
+                            <th>종목</th>
+                            <th>전날대비</th>
+                            <th>언급</th>
+                            <th>기간</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr  class="table-row active-row"  th:each="ts : ${total_stock}">
+                            <td th:text="${ts.ranking}"></td>
+                            <td><a th:href="@{/search(category='companyName', keyword=${ts.stock.companyName})}" th:text="${ts.stock.companyName}"></a></td>
+                            <td th:text="${ts.stock.stockPriceNow.changeRate}"></td>
+                            <td th:text="${ts.cnt}"></td>
+                            <td th:text="${ts.period}" class="period"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div th:class="container-content">
+                    <h5>기간별 블로그 테마 언급량</h5>
+                    <table id="tableBody2" class="styled-table total-table">
+                        <colgroup>
+                            <col style="width: 10%;">
+                            <col style="width: 60%;">
+                            <col style="width: 10%;">
+                            <col style="width: 10%;">
+                            <col style="width: 10%;">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>랭킹</th>
+                            <th>테마</th>
+                            <th>전날대비</th>
+                            <th>업급</th>
+                            <th>기간</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr  class="table-row active-row"  th:each="tt : ${total_theme}">
+                            <td th:text="${tt.ranking}"></td>
+                            <td><a th:href="@{/search(category='theme' ,keyword=${tt.theme.themeName})}" th:text="${tt.theme.themeName}"></a></td>
+                            <td th:text="${tt.theme.themeAverageChangeRate.averageChangeRate}"></td>
+                            <td th:text="${tt.cnt}"></td>
+                            <td th:text="${tt.period}" class="period"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <div th:class="container">
+                <div th:class="container-content">
+                    <h5>전날 대비 최대 언급 증가 종목</h5>
+                    <table id="tableBody3" class="styled-table">
+                        <colgroup>
+                            <col style="width: 60%;">
+                            <col style="width: 20%;">
+                            <col style="width: 20%;">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>종목명</th>
+                            <th>전날대비</th>
+                            <th>언급+</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr  class=" active-row"  th:each="smi : ${stock_mention_increments}" >
+                            <td><a th:href="@{/search(category='companyName', keyword=${smi.stock.companyName})}" th:text="${smi.stock.companyName}"></a></td>
+                            <td th:text="${smi.stock.stockPriceNow.changeRate}"></td>
+                            <td th:text="${smi.increase}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div th:class="container-content">
+                    <h5>전날 대비 최대 언급 증가 테마</h5>
+
+                    <table id="tableBody4" class="styled-table">
+                        <colgroup>
+                            <col style="width: 70%;">
+                            <col style="width: 15%;">
+                            <col style="width: 15%;">
+
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>종목명</th>
+                            <th>전날대비</th>
+                            <th>언급+</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr  class=" active-row"  th:each="tmi : ${theme_mention_increments}" >
+                            <td><a th:href="@{/search(category='theme', keyword=${tmi.theme.themeName})}" th:text="${tmi.theme.themeName}"></a></td>
+                            <td th:text="${tmi.theme.themeAverageChangeRate.averageChangeRate}"></td>
+                            <td th:text="${tmi.increase}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            filterTable(); // 페이지가 로드될 때 필터링 함수 실행
+        });
+
+        function deleteStockLike(stockId) {
+            if (confirm("즐겨찾기를 취소 하시겠습니까?") == true) {
+                location.href = "/favorite/delete/stock2?stockId=" + stockId;
+            }
+        }
+
+        function deleteThemeLike(themeId) {
+            if (confirm("즐겨찾기를 취소 하시겠습니까?") == true) {
+                location.href = "/favorite/delete/theme2?themeId=" + themeId;
+            }
+        }
+        function filterTable() {
+            let selectedPeriod = document.getElementById('periodSelect').value;
+            const rows = document.querySelectorAll('.table-row');
+
+            // 선택된 period가 없을 때 기본적으로 '7'을 사용
+            if (selectedPeriod === "") {
+                selectedPeriod = "7";
+            }
+
+            rows.forEach(row => {
+                const period = row.querySelector('.period').textContent.trim(); // 공백 제거 추가
+                if (period === selectedPeriod) {
+                    row.style.display = ''; // 보이도록 설정
+                } else {
+                    row.style.display = 'none'; // 숨기도록 설정
+                }
+            });
+        }
+    </script>
+</body>
+</html>

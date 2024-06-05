@@ -1,0 +1,370 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/header.html :: head"/>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+<link rel="stylesheet" href="/css/custom.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<body>
+<div th:replace="fragments/header.html :: header ('stock')"></div>
+
+<div th:class="container-root-layout">
+
+    <div th:class="container-column">
+        <div th:replace="fragments/search.html :: search"></div>
+        <div th:class="container-content">
+            <div th:class="container">
+                <h3 th:text="${stock.companyName} + ' (' + ${stock.ticker} + ')'">Company Name (Ticker)</h3>
+                <div sec:authorize="isAuthenticated()">
+                    <div th:if="${favoriteCheck == false}" style="font-size: large">
+                        <button class="btn icon-btn" type="button"
+                            th:onclick="|location.href='@{/favorite/add/stock?stockId={stockId}(stockId=${stock.id})}'|">
+                        <img class="small-img" src="/images/empty-hearts.svg">
+                        </button>
+                    </div>
+                    <div th:unless="${favoriteCheck == false}" style="font-size: large">
+                        <button class="btn icon-btn" type="button"
+                                onclick="deleteLike()">
+                            <img class="small-img" src="/images/fill-hearts.svg">
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-box">
+                <span th:if="${nowStockPrice != null}" th:text="${nowStockPrice.changeRate > 0 ? '+' + nowStockPrice.changeRate + '%' : nowStockPrice.changeRate + '%'}">Change Rate</span>
+            </div>
+            <p th:text="'시장: ' + ${stockInfo.market} + ' | 섹터: ' + ${stockInfo.sector}+ ' | 시총: ' + ${stockInfo.marketCap}">Market | Sector</p>
+            <p th:text="${stockInfo.companyDescription}">Company Description</p>
+
+
+
+        </div>
+        <div th:class="container-content">
+            <table class="stock-table">
+                <tbody>
+                <tr>
+                    <th>배당금</th>
+                    <td th:text="${stockInfo.divided != null ? stockInfo.divided : 'N/A'}"></td>
+                    <th>배당률</th>
+                    <td th:text="${stockInfo.dividedRate != null ? stockInfo.dividedRate : 'N/A'}"></td>
+                    <th>PER</th>
+                    <td th:text="${stockInfo.per != null ? stockInfo.per : 'N/A'}"></td>
+                </tr>
+                <tr>
+                    <th>EPS</th>
+                    <td th:text="${stockInfo.eps != null ? stockInfo.eps : 'N/A'}"></td>
+                    <th>PBR</th>
+                    <td th:text="${stockInfo.pbr != null ? stockInfo.pbr : 'N/A'}"></td>
+                    <th>BPS</th>
+                    <td th:text="${stockInfo.bps != null ? stockInfo.bps : 'N/A'}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+
+
+        <div th:class="container-content">
+            <div id="chart" style="height: 400px; min-width: 310px"></div>
+        </div>
+        <div th:class="container-content">
+            <div id="chart2" style="width:100%; height:400px;"></div>
+        </div>
+
+        <div th:class="container">
+            <div th:class="container-content">
+                <h5>관련 종목</h5>
+                <div class="table-scroll">
+                    <table class="styled-table total-table">
+                        <colgroup>
+                            <col style="width: 70%;">
+                            <col style="width: 30%;">
+
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>관련 종목</th>
+                            <th>전날대비</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr class="active-row" th:each="rsa : ${relatedStockAggregate}">
+                            <td><a th:href="@{/search(category='companyName', keyword=${rsa.mentionStock.companyName})}" th:text="${rsa.mentionStock.companyName}"></a></td>
+                            <td th:text="${rsa.mentionStock.stockPriceNow.changeRate}"></td>
+
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div th:class="container-content">
+                <h5> 관련 테마</h5>
+                <table class="styled-table total-table div-scroll">
+                    <colgroup>
+                        <col style="width: 100%;">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>관련 테마</th>
+                        <th>전날대비</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr  class="active-row"  th:each="ts : ${themeStock}">
+                        <td><a th:href="@{/search(category='theme', keyword=${ts.theme.themeName})}" th:text="${ts.theme.themeName}"></a></td>
+                        <td th:text="${ts.theme.themeAverageChangeRate.averageChangeRate}"></td>
+
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <form th:class="container">
+            <select th:class="select-period" id="periodSelect" onchange="filterTable()">
+                <option value="1">1 Day</option>
+                <option value="3" >3 Days</option>
+                <option value="7" >7 Days</option>
+                <option value="30" selected>30 Days</option>
+            </select>
+        </form>
+
+        <div th:class="container">
+            <div th:class="container-content">
+                <h5> 테마 블로그 언급 순위</h5>
+                <table id="tableBody" class="styled-table total-table">
+                    <colgroup>
+                        <col style="width: 15%;">
+                        <col style="width: 55%;">
+                        <col style="width: 15%;">
+                        <col style="width: 15%;">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>랭킹</th>
+                        <th>테마</th>
+                        <th>언급</th>
+                        <th>기간</th>
+                        <th>전날대비</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr  class="table-row active-row"  th:each="ea : ${eachStockAggregates}">
+                        <td th:text="${ea.ranking}"></td>
+                        <td><a th:href="@{/search(category='theme', keyword=${ea.theme.themeName})}" th:text="${ea.theme.themeName}"></a></td>
+                        <td th:text="${ea.cnt}"></td>
+                        <td th:text="${ea.period}" class="period"></td>
+                        <td th:text="${ea.theme.themeAverageChangeRate.averageChangeRate}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Stock Blogs Section -->
+        <div th:class="container-content">
+            <h5>Stock Blogs</h5>
+            <div th:each="blog : ${stockBlogs.content}" class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${blog.title}">Blog Title</h5>
+                    <h6 class="card-subtitle mb-2 text-muted" th:text="${blog.header}">Blog Header</h6>
+                    <a th:href="${blog.href}" class="card-link" target="_blank">Read more</a>
+                    <div class="text-muted" th:text="${blog.date}">Blog Date</div>
+                </div>
+            </div>
+            <!-- Pagination -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination" style="justify-content: center">
+                    <li class="page-item" th:classappend="${stockBlogs.hasPrevious()} ? '' : 'disabled'">
+                        <a class="page-link" th:href="@{/stock(stock=${stock.id}, page=${stockBlogs.number - 1}, size=${stockBlogs.size})}">Previous</a>
+                    </li>
+                    <li class="page-item" th:classappend="${stockBlogs.number > 2} ? '' : 'd-none'">
+                        <a class="page-link" th:href="@{/stock(stock=${stock.id}, page=${0}, size=${stockBlogs.size})}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${stockBlogs.number > 3} ? '' : 'd-none'">
+                        <span class="page-link">...</span>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, stockBlogs.totalPages - 1)}"
+                        th:if="${i >= stockBlogs.number - 2} and ${i <= stockBlogs.number + 2}"
+                        th:classappend="${stockBlogs.number == i} ? 'active'">
+                        <a class="page-link" th:href="@{/stock(stock=${stock.id}, page=${i}, size=${stockBlogs.size})}"
+                           th:text="${i + 1}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${stockBlogs.number < stockBlogs.totalPages - 4} ? '' : 'd-none'">
+                        <span class="page-link">...</span>
+                    </li>
+                    <li class="page-item" th:classappend="${stockBlogs.number < stockBlogs.totalPages - 3} ? '' : 'd-none'">
+                        <a class="page-link" th:href="@{/stock(stock=${stock.id}, page=${stockBlogs.totalPages - 1}, size=${stockBlogs.size})}" th:text="${stockBlogs.totalPages}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${stockBlogs.hasNext()} ? '' : 'disabled'">
+                        <a class="page-link" th:href="@{/stock(stock=${stock.id}, page=${stockBlogs.number + 1}, size=${stockBlogs.size})}">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+
+        <div th:class="container-content">
+            <div th:class="container-column">
+                <h3 th:text="${commentList.size()} + '개의 댓글'"></h3>
+                <hr/>
+                <form class="form-group" th:object="${categoryCommentCreateRequest}"  th:method="post" th:action="|@{/comments/stock/{id} (id=${stock.id})}|">
+                    <div style="text-align: right">
+                        <!-- 로그인 했을 때 -->
+                        <div sec:authorize="isAuthenticated()">
+                            <textarea rows="3" th:field="*{body}" placeholder="댓글을 입력해 주세요" style="width: 100%"/>
+                            <button class="login-button" type="submit">댓글 추가</button>
+                        </div>
+                        <!-- 로그인 안 했을 때 -->
+                        <div sec:authorize="isAnonymous()">
+                            <textarea rows="3" th:field="*{body}" placeholder="로그인한 유저만 댓글을 작성할 수 있습니다" style="width: 100%" readonly/>
+                        </div>
+                    </div>
+                </form>
+                <hr/>
+                <div th:each="comment : ${commentList}" th:align="center">
+                    <form class="card" style="width: 100%" th:object="${categoryCommentCreateRequest}" th:method="post"
+                          th:action="|@{/comments/stock/{id}/{commentId}/edit(id=${stock.id},commentId=${comment.id})}|">
+                        <div class="card-body" style="text-align: left;">
+                            <div>
+                                <div class = "box-row" style="float: left">
+                                    <div class="font-bold box-pr box-br" th:text="${comment.user.nickname}"></div>
+                                    <div class="box-pl" th:text="${#temporals.format(comment.createdAt, 'yy/MM/dd HH:mm')}"></div>
+                                </div>
+                                <div th:if="${comment.user.loginId == loginUserLoginId}" style="float: right;">
+                                    <button type="submit" class="btn edit-btn" style="width: fit-content; margin: 0px;">수정</button>
+                                    <button type="button" class="btn edit-btn" style="width: fit-content; margin: 0px;"
+                                            th:onclick="|location.href='@{/comments/stock/{id}/{commentId}/delete(id=${stock.id},commentId=${comment.id})}'|">삭제</button>
+                                </div>
+                                <div th:unless="${comment.user.loginId == loginUserLoginId}" sec:authorize="hasAuthority('ADMIN')" style="float: right;">
+                                    <button type="button" class="btn edit-btn" style="width: fit-content; margin: 0px;"
+                                            th:onclick="|location.href='@{/comments/stock/{id}/{commentId}/delete(id=${stock.id},commentId=${comment.id})}'|">삭제</button>
+                                </div>
+                            </div>
+
+                            <div th:if="${comment.user.loginId == loginUserLoginId}">
+                        <textarea rows="3" class="card-text" th:text="${comment.body}" id="body" name="body"
+                                  style="margin-bottom: 10px; width: 100%"></textarea>
+                            </div>
+                            <div th:unless="${comment.user.loginId == loginUserLoginId}">
+                                <textarea rows="3" class="card-text" th:text="${comment.body}" style="margin-bottom: 10px; width: 100%" readonly></textarea>
+                            </div>
+                        </div>
+                    </form>
+                    <br/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/stock/modules/export-data.js"></script>
+<script th:inline="javascript">
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        filterTable(); // 페이지가 로드될 때 필터링 함수 실행
+    });
+
+    function deleteLike() {
+        if (confirm("즐겨찾기를 취소 하시겠습니까?") == true) {
+            location.href = "/favorite/delete/stock?stockId="+[[${stock.id}]];        }
+    };
+    function filterTable() {
+        let selectedPeriod = document.getElementById('periodSelect').value;
+        const rows = document.querySelectorAll('.table-row');
+
+        rows.forEach(row => {
+            const periodElement = row.querySelector('.period');
+            if (periodElement) {
+                const period = periodElement.textContent.trim();
+                if (period === selectedPeriod) {
+                    row.style.display = ''; // 해당 기간의 행을 보이도록 설정
+                } else {
+                    row.style.display = 'none'; // 다른 기간의 행을 숨김
+                }
+            } else {
+                console.error('Period element not found in the row', row);
+                row.style.display = 'none'; // period 요소가 없는 행은 숨김
+            }
+        });
+    }
+
+    /*<![CDATA[*/
+    var data = /*[[${stockPrices}]]*/ 'default';
+
+    Highcharts.stockChart('chart', {
+        rangeSelector: {
+            selected: 1
+        },
+
+        title: {
+            text: 'Stock Price'
+        },
+
+        series: [{
+            type: 'candlestick',
+            name: '주가',
+            data: data.map(stockPrice => {
+                return {
+                    x: new Date(stockPrice.date).getTime(), // 날짜
+                    open: stockPrice.open,                  // 개장가
+                    high: stockPrice.high,                  // 최고가
+                    low: stockPrice.low,                    // 최저가
+                    close: stockPrice.close,                // 종가
+                    changeRate: stockPrice.changeRate       // 변동률
+                };
+            }),
+            color: 'blue',     // 하락 캔들의 색상
+            upColor: 'red',    // 상승 캔들의 색상
+            lineColor: 'blue', // 하락 캔들의 선 색상
+            upLineColor: 'red', // 상승 캔들의 선 색상
+            tooltip: {
+                valueDecimals: 2,
+                pointFormatter: function () {
+                    return `
+                    <span style="color:${this.color}">\u25CF</span> ${this.series.name} <br/>
+                    Open: ${this.open.toFixed(2)}<br/>
+                    High: ${this.high.toFixed(2)}<br/>
+                    Low: ${this.low.toFixed(2)}<br/>
+                    Close: ${this.close.toFixed(2)}<br/>
+                    Change Rate: ${this.changeRate.toFixed(2)}%<br/>`;
+                }
+            }
+        }]
+    });
+    /*]]>*/
+
+    /*<![CDATA[*/
+    var data = /*[[${dateStockAggregates}]]*/ [];
+    var chartData = data.map(item => [Date.parse(item.date), item.cnt]);
+
+    Highcharts.chart('chart2', {
+        chart: {
+            type: 'line'
+        },
+        title: {
+            text: '테마 블로그 언급수'
+        },
+        xAxis: {
+            type: 'datetime',
+            title: {
+                text: '날짜'
+            }
+        },
+        yAxis: {
+            title: {
+                text: '언급수'
+            }
+        },
+        series: [{
+            name: '언급수',
+            data: chartData
+        }]
+    });
+    /*]]>*/
+
+</script>

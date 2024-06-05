@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head" />
+  <body>
+    <div th:replace="fragments/header.html :: header ('join')"></div>
+    <form class="login-form" th:method="post" th:action="@{/users/join}" th:object="${userJoinRequest}" align="left">
+      <div>
+        <label th:class="login-label" th:for="loginId">아이디 (아이디는 변경할 수 없습니다)</label>
+        <input th:class="login-input" type="text" th:field="*{loginId}" placeholder="아이디를 입력해주세요.(최대 10자)"
+               th:errorclass="error-input"/>
+        <div th:class="error-div" th:errors="*{loginId}"/>
+      </div>
+      <br/>
+      <div>
+        <label th:class="login-label" th:for="password">비밀번호</label>
+        <input th:class="login-input" type="password" th:field="*{password}" placeholder="비밀번호를 입력해주세요."
+               th:errorclass="error-input"/>
+        <div th:class="error-div" th:errors="*{password}"/>
+      </div>
+      <br/>
+      <div>
+        <label th:class="login-label" th:for="passwordCheck">비밀번호 체크</label>
+        <input th:class="login-input" type="password" th:field="*{passwordCheck}" placeholder="비밀번호를 한 번 더 입력해주세요."
+               th:errorclass="error-input"/>
+        <div th:class="error-div" th:errors="*{passwordCheck}"/>
+      </div>
+      <br/>
+      <div>
+        <label th:class="login-label" th:for="nickname">닉네임</label>
+        <input th:class="login-input" type="text" th:field="*{nickname}" placeholder="사용할 닉네임을 입력해주세요.(최대 10자)"
+               th:errorclass="error-input"/>
+        <div th:class="error-div" th:errors="*{nickname}"/>
+      </div>
+      <br/>
+      <div align="center">
+        <button th:class="login-button" type="submit">회원가입</button>
+      </div>
+    </form>
+  </body>
+</html>

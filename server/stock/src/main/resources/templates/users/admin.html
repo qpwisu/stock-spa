@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head">
+    <meta charset="UTF-8">
+    <title>Admin - User Management</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body>
+<div th:replace="fragments/header.html :: header ('admin')"></div>
+
+<div th:class="container-root-layout">
+    <div class="container-column my-5 container-content">
+        <div class="row">
+            <div class="col-12 mb-4">
+                <form class="form-group d-flex justify-content-center" th:method="get" th:action="|@{/users/admin (keyword=${keyword})}|">
+                    <input type="text" name="keyword" th:value="${keyword}" placeholder="닉네임을 입력해주세요" class="form-control w-50">
+                    <button class="btn btn-primary ms-2 search-btn" type="submit">검색</button>
+                </form>
+            </div>
+            <div class="col-12">
+                <table class="table table-hover text-center">
+                    <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>아이디</th>
+                        <th>닉네임</th>
+                        <th>등급</th>
+                        <th>가입일</th>
+                        <th>작성 글 수</th>
+                        <th>작성 댓글 수</th>
+                        <th>누른 좋아요 수</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user: ${users}" th:onclick="|location.href='@{/users/admin/{userId} (userId=${user.id}, page=${users.getNumber()}+1, keyword=${keyword})}'|">
+                        <td th:text="${user.id}"></td>
+                        <td th:text="${user.loginId}"></td>
+                        <td th:text="${user.nickname}"></td>
+                        <td th:text="${user.userRole}"></td>
+                        <td th:text="${#temporals.format(user.createdAt, 'yy/MM/dd HH:mm')}"></td>
+                        <td th:text="${user.boards.size}"></td>
+                        <td th:text="${user.comments.size}"></td>
+                        <td th:text="${user.likes.size}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <ul id="paging-ul" class="pagination justify-content-center"></ul>
+    </div>
+</div>
+
+
+<script th:inline="javascript">
+    // Pagination and other scripts go here
+</script>
+</body>
+</html>

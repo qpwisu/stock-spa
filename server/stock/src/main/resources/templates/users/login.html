@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head">
+    <meta charset="UTF-8">
+    <title>로그인</title>
+    <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body>
+    <div th:replace="fragments/header.html :: header ('login')"></div>
+    <div>
+<!--        <h1><a th:href="|/${loginType}|">[[${pageName}]]</a></h1> <hr/>-->
+        <form th:method="post" th:action="@{/users/login}" th:object="${userLoginRequest}" th:class="login-form">
+            <div>
+                <label th:class="login-label" th:for="loginId">로그인 아이디 : </label>
+                <input th:class="login-input" type="text" th:field="*{loginId}"/>
+                <div th:class="error-div" th:errors="*{loginId}"/>
+
+            </div>
+            <br/>
+            <div>
+                <label th:class="login-label" th:for="password">비밀번호 : </label>
+                <input th:class="login-input" type="password" th:field="*{password}"/>
+                <div th:class="error-div" th:errors="*{password}"/>
+            </div>
+            <div th:if="${#fields.hasGlobalErrors()}">
+                <br/>
+                <div class="error-class" th:each="error : ${#fields.globalErrors()}" th:text="${error}" />
+            </div>
+            <br/>
+            <div align="center">
+                <button th:class="login-button" type="submit">로그인</button>
+                <button th:class="login-button" type="button" th:onclick="|location.href='/users/join'|">회원 가입</button> <br/>
+            </div>
+
+        </form>
+    </div>
+</body>
+</html>
