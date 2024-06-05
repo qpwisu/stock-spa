@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
 <head>
+  <title>Search Example</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <body>
 <div th:fragment="search">
   <div>
-    <form id="searchForm" class="search-bar">
+    <form id="searchForm" class="search-bar" autocomplete="off">
       <select id="categorySelect" class="select-period">
         <option value="ticker">티커</option>
         <option value="companyName" selected>종목명</option>
@@ -17,6 +19,7 @@
       </div>
     </form>
   </div>
+
   <script>
     $(document).ready(function() {
       $('#searchInput').on('input', function() {
@@ -24,7 +27,7 @@
         var category = $('#categorySelect').val();   // 선택된 카테고리 값을 가져옵니다.
         if (keyword.length >= 2) {
           $.ajax({
-            url: 'http://localhost:8081/search/autocomplete',
+            url: '/search/autocomplete',
             data: {
               keyword: keyword,
               category: category  // 카테고리도 요청에 포함합니다.
@@ -50,8 +53,17 @@
         $('#searchInput').val(keywordText);
         $('#autocompleteResults').hide();
       });
-    });
 
+      $('#searchForm').on('submit', function(event) {
+        event.preventDefault(); // 기본 폼 제출 동작 방지
+        var keyword = $('#searchInput').val();
+        var category = $('#categorySelect').val();
+        if (keyword.length > 0) {
+          var targetUrl = '/search?category=' + encodeURIComponent(category) + '&keyword=' + encodeURIComponent(keyword);
+          window.location.href = targetUrl;
+        }
+      });
+    });
   </script>
 </div>
 
