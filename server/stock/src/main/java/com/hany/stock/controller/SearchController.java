@@ -26,21 +26,36 @@ public class SearchController {
 
     private final StockService stockService;
     private final ThemeService themeService;
-
     @GetMapping("")
     public String searchPage(@RequestParam String category, @RequestParam String keyword, RedirectAttributes attributes) {
-        switch (category) {
-            case "ticker":
-                attributes.addAttribute("stock", stockService.getStockByTicker(keyword));
-                return "redirect:/stock";
-            case "companyName":
-                attributes.addAttribute("stock", stockService.getStockByCompanyName(keyword));
-                return "redirect:/stock";
-            case "theme":
-                attributes.addAttribute("theme", themeService.getThemeIdByThemeName(keyword));
-                return "redirect:/theme";
-            default:
-                return "home";
+        try {
+            switch (category) {
+                case "ticker":
+                    Stocks stockByTicker = stockService.getStockByTicker(keyword);
+                    if (stockByTicker == null) {
+                        return "redirect:/";
+                    }
+                    attributes.addAttribute("stock", stockByTicker);
+                    return "redirect:/stock";
+                case "companyName":
+                    Stocks stockByCompanyName = stockService.getStockByCompanyName(keyword);
+                    if (stockByCompanyName == null) {
+                        return "redirect:/";
+                    }
+                    attributes.addAttribute("stock", stockByCompanyName);
+                    return "redirect:/stock";
+                case "theme":
+                    Long themeByThemeName = themeService.getThemeIdByThemeName(keyword);
+                    if (themeByThemeName == null) {
+                        return "redirect:/";
+                    }
+                    attributes.addAttribute("theme", themeByThemeName);
+                    return "redirect:/theme";
+                default:
+                    return "redirect:/";
+            }
+        } catch (Exception e) {
+            return "redirect:/";
         }
     }
     @GetMapping("/autocomplete")
