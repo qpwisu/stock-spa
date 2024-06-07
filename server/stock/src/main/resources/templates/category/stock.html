@@ -29,10 +29,13 @@
                     </div>
                 </div>
             </div>
-            <div class="flex-box">
-                <span th:if="${nowStockPrice != null}" th:text="${nowStockPrice.changeRate > 0 ? '+' + nowStockPrice.changeRate + '%' : nowStockPrice.changeRate + '%'}">Change Rate</span>
-            </div>
-            <p th:text="'시장: ' + ${stockInfo.market} + ' | 섹터: ' + ${stockInfo.sector}+ ' | 시총: ' + ${stockInfo.marketCap}">Market | Sector</p>
+            <p>
+                <h3 class="flex-box">
+                    <span th:if="${nowStockPrice != null}" th:text="${nowStockPrice.changeRate > 0 ? '+' + nowStockPrice.changeRate + '%' : nowStockPrice.changeRate + '%'}">Change Rate</span>
+                </h3>
+            </p>
+            <p>시총: <span id="marketCap">2.067E11</span></p>
+            <p th:text="'시장: ' + ${stockInfo.market} + ' | 섹터: ' + ${stockInfo.sector}">Market | Sector</p>
             <p th:text="${stockInfo.companyDescription}">Company Description</p>
 
 
@@ -131,7 +134,7 @@
                 <option value="30" selected>30 Days</option>
             </select>
         </form>
-
+ㄹㄹ
         <div th:class="container">
             <div th:class="container-content">
                 <h5> 테마 블로그 언급 순위</h5>
@@ -264,7 +267,26 @@
 <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
 <script src="https://code.highcharts.com/stock/modules/export-data.js"></script>
 <script th:inline="javascript">
+    function formatNumber(number) {
+        // Number 객체로 변환
+        let num = Number(number);
 
+        // 억 단위로 변환
+        let formattedNumber = (num / 1e8).toFixed(2); // 1e8 = 100,000,000
+
+        // 정수 부분과 소수 부분 분리
+        let parts = formattedNumber.split('.');
+        let integerPart = parts[0];
+        let decimalPart = parts[1] ? parts[1] : '00';
+
+        return `${integerPart}.${decimalPart}억`;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var marketCapElement = document.getElementById('marketCap');
+        var marketCap = marketCapElement.innerText;
+        marketCapElement.innerText = formatNumber(marketCap);
+    });
     document.addEventListener('DOMContentLoaded', (event) => {
         filterTable(); // 페이지가 로드될 때 필터링 함수 실행
     });
