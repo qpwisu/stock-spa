@@ -59,11 +59,12 @@
 3. source myenv/bin/activate
 4. pip install requirements.txt
 5. playwright install 
-6. python update.py 
+6. nohup python update.py > output.log 2>&1 &
 
 ## spring 초기 설정 
 1. cd server 
 2. ./gradlew build
-3. ./gradlew bootRun
+3. nohup ./gradlew bootRun &
+
 
 
