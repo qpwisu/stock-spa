@@ -31,10 +31,14 @@
             </div>
             <p>
                 <h3 class="flex-box">
-                    <span th:if="${nowStockPrice != null}" th:text="${nowStockPrice.changeRate > 0 ? '+' + nowStockPrice.changeRate + '%' : nowStockPrice.changeRate + '%'}">Change Rate</span>
+                    <span th:if="${stock.stockPriceNow.changeRate != null}"
+                          th:text="${nowStockPrice.changeRate > 0 ? '+' + stock.stockPriceNow.changeRate + '%' : stock.stockPriceNow.changeRate + '%'}"
+                          th:style="${nowStockPrice.changeRate > 0 ? 'color: red;' : 'color: blue;'}">
+                        Change Rate
+                    </span>
                 </h3>
             </p>
-            <p>시총: <span id="marketCap">2.067E11</span></p>
+            <p>시총: <span id="marketCap" th:text="${stockInfo.marketCap}"></span></p>
             <p th:text="'시장: ' + ${stockInfo.market} + ' | 섹터: ' + ${stockInfo.sector}">Market | Sector</p>
             <p th:text="${stockInfo.companyDescription}">Company Description</p>
 
@@ -101,7 +105,6 @@
                     </table>
                 </div>
             </div>
-
             <div th:class="container-content">
                 <h5> 관련 테마</h5>
                 <table class="styled-table total-table div-scroll">
@@ -276,9 +279,7 @@
         // 정수 부분과 소수 부분 분리
         let parts = formattedNumber.split('.');
         let integerPart = parts[0];
-        let decimalPart = parts[1] ? parts[1] : '00';
-
-        return `${integerPart}.${decimalPart}억`;
+        return `${integerPart}억`;
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -286,14 +287,17 @@
         var marketCap = marketCapElement.innerText;
         marketCapElement.innerText = formatNumber(marketCap);
     });
+
     document.addEventListener('DOMContentLoaded', (event) => {
         filterTable(); // 페이지가 로드될 때 필터링 함수 실행
     });
 
     function deleteLike() {
         if (confirm("즐겨찾기를 취소 하시겠습니까?") == true) {
-            location.href = "/favorite/delete/stock?stockId="+[[${stock.id}]];        }
+            location.href = "/favorite/delete/stock?stockId=" + [[${stock.id}]];
+        }
     };
+
     function filterTable() {
         let selectedPeriod = document.getElementById('periodSelect').value;
         const rows = document.querySelectorAll('.table-row');
@@ -317,6 +321,34 @@
     /*<![CDATA[*/
     var data = /*[[${stockPrices}]]*/ 'default';
 
+    // 현재 가격 데이터
+    var currentPriceData = {
+        x: new Date(/*[[${stock.stockPriceNow.date}]]*/ '1970-01-01').getTime(),  // date 값이 없을 경우 기본값을 설정
+        open: /*[[${stock.stockPriceNow.open}]]*/ 0,
+        high: /*[[${stock.stockPriceNow.high}]]*/ 0,
+        low: /*[[${stock.stockPriceNow.low}]]*/ 0,
+        close: /*[[${stock.stockPriceNow.close}]]*/ 0,
+        changeRate: /*[[${stock.stockPriceNow.changeRate}]]*/ 0
+    };
+
+    // 기존 데이터에 현재 가격 데이터 추가
+    var combinedData = data.map(stockPrice => {
+        return {
+            x: new Date(stockPrice.date).getTime(),
+            open: stockPrice.open,
+            high: stockPrice.high,
+            low: stockPrice.low,
+            close: stockPrice.close,
+            changeRate: stockPrice.changeRate
+        };
+    });
+    combinedData.push(currentPriceData);
+    Highcharts.setOptions({
+        time: {
+            timezone: 'Asia/Seoul' // 한국 시간대 설정
+        }
+    });
+
     Highcharts.stockChart('chart', {
         rangeSelector: {
             selected: 1
@@ -325,20 +357,14 @@
         title: {
             text: 'Stock Price'
         },
+        yAxis: {
+            opposite: false // y축이 오른쪽에 나타나지 않도록 설정 (선택사항)
+        },
 
         series: [{
             type: 'candlestick',
             name: '주가',
-            data: data.map(stockPrice => {
-                return {
-                    x: new Date(stockPrice.date).getTime(), // 날짜
-                    open: stockPrice.open,                  // 개장가
-                    high: stockPrice.high,                  // 최고가
-                    low: stockPrice.low,                    // 최저가
-                    close: stockPrice.close,                // 종가
-                    changeRate: stockPrice.changeRate       // 변동률
-                };
-            }),
+            data: combinedData,
             color: 'blue',     // 하락 캔들의 색상
             upColor: 'red',    // 상승 캔들의 색상
             lineColor: 'blue', // 하락 캔들의 선 색상
@@ -356,12 +382,14 @@
                 }
             }
         }]
+
+
     });
     /*]]>*/
 
     /*<![CDATA[*/
-    var data = /*[[${dateStockAggregates}]]*/ [];
-    var chartData = data.map(item => [Date.parse(item.date), item.cnt]);
+    var data2 = /*[[${dateStockAggregates}]]*/ [];
+    var chartData = data2.map(item => [Date.parse(item.date), item.cnt]);
 
     Highcharts.chart('chart2', {
         chart: {
