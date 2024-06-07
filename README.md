@@ -62,7 +62,7 @@
 6. nohup python update.py > output.log 2>&1 &
 
 ## spring 초기 설정 
-1. cd server 
+1. cd server/stock 
 2. ./gradlew build
 3. nohup ./gradlew bootRun &
 
