@@ -66,5 +66,8 @@
 2. ./gradlew build
 3. nohup ./gradlew bootRun &
 
-
+## 수정해야할 것 
+1. https 설정
+2. url에 :8081로 포트 붙혀야되는 문제 
+    - 개인 네트워크에 80포트가 이미 사용중임 
 

@@ -196,7 +196,7 @@ class CreateAggregateTable():
             stock_id
         ORDER BY
             increase DESC
-        LIMIT 20; -- 가장 큰 증가를 보인 stock_id 하나만 출력
+        LIMIT 40; -- 가장 큰 증가를 보인 stock_id  출력
         ''')
 
         df_t = self.connector.default_query(
@@ -230,7 +230,7 @@ class CreateAggregateTable():
             theme_id
         ORDER BY
             increase DESC
-        LIMIT 20; -- 가장 큰 증가를 보인 stock_id 하나만 출력
+        LIMIT 40; -- 가장 큰 증가를 보인 stock_id  출력
         ''')
 
         return df_s,df_t
