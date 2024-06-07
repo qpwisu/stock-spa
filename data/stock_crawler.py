@@ -50,6 +50,7 @@ class StockCrawler:
         bps_list = []
         divided_list = []
         divided_rate_list = []
+        market_list = []
         count = 0
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
@@ -90,6 +91,7 @@ class StockCrawler:
                             btn.click()
                             time.sleep(0.5)
 
+                        market = page.query_selector("span.GraphMain_market__2b2gd").text_content()
                         elements = page.query_selector_all("li.StockInfo_item__H7Aor > div.StockInfo_inner__8plY1")
                         dic = {}
                         for ele in elements:
@@ -104,7 +106,7 @@ class StockCrawler:
                         bps_list.append(self.extract_numbers_and_dots(dic["BPS"]))
                         divided_list.append(self.extract_numbers_and_dots(dic["주당배당금"]))
                         divided_rate_list.append(self.extract_numbers_and_dots(dic["배당수익률"]))
-
+                        market_list.append(market)
                     except Exception as e:
                         # print(f"이외 회사 정보 크로링 실패 {ticker}: {e}")
                         market_cap_list.append(None)
@@ -114,6 +116,8 @@ class StockCrawler:
                         bps_list.append(None)
                         divided_list.append(None)
                         divided_rate_list.append(None)
+                        market_list.append(None)
+
 
                 except Exception as e:
                     print(f"페이지 이동 실패 {ticker}: {e}")
@@ -126,6 +130,7 @@ class StockCrawler:
                     bps_list.append(None)
                     divided_list.append(None)
                     divided_rate_list.append(None)
+                    market_list.append(None)
 
                 finally:
                     # 페이지를 주기적으로 닫아주지 않으면 AttributeError: 'dict' object has no attribute '_object 에러 발생
@@ -144,6 +149,7 @@ class StockCrawler:
         df_combined["bps"] = bps_list
         df_combined["divided"] = divided_list
         df_combined["divided_rate"] = divided_rate_list
+        df_combined["market"] = market_list
         df_combined.rename(columns={"id": "stock_id"}, inplace=True)
         df_combined.drop('ticker', axis=1, inplace=True)
         df_combined.drop('company_name', axis=1, inplace=True)
@@ -155,7 +161,7 @@ class StockCrawler:
     '''
     def stock_price_crawler(self, stocks_df, start_date, end_date):
         df_kr_price = pd.DataFrame()
-        ticker_list = stocks_df["ticker"].tolist()
+        ticker_list = stocks_df["ticker"].tolilsst()
         # 국내 종목 티커
         for ticker in tqdm(ticker_list):
             df = stock.get_market_ohlcv(start_date, end_date, ticker).reset_index()
