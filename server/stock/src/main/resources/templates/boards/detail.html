@@ -14,7 +14,12 @@
         <div class="row mb-3">
             <div class="col-md-12">
                 <div class="col-12">
-                    <h2 th:text="${category == 'free'} ? '자유게시판' : '가입인사'"> 게시글 작성 </h2>
+                    <h2 th:switch="${category}">
+                        <span th:case="'free'">자유게시판</span>
+                        <span th:case="'greeting'">가입인사</span>
+                        <span th:case="'request'">요청게시판</span>
+                        <span th:case="*">게시글 작성</span>
+                    </h2>
                     <hr>
                     <div th:object="${boardDto}">
                         <div class="flex-between">
