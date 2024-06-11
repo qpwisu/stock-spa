@@ -161,7 +161,7 @@ class StockCrawler:
     '''
     def stock_price_crawler(self, stocks_df, start_date, end_date):
         df_kr_price = pd.DataFrame()
-        ticker_list = stocks_df["ticker"].tolilsst()
+        ticker_list = stocks_df["ticker"].to_list()
         # 국내 종목 티커
         for ticker in tqdm(ticker_list):
             df = stock.get_market_ohlcv(start_date, end_date, ticker).reset_index()

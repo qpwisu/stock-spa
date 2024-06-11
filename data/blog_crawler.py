@@ -14,7 +14,7 @@ class BlogCrawler:
             try:
                 page = await context.new_page()
                 url = f'https://search.naver.com/search.naver?ssc=tab.blog.all&query={name} 관련주&sm=tab_opt&nso=so%3Ar%2Cp%3Afrom{date}to{date}'
-                await page.goto(url, timeout=3000) # 너무 빠른 페이지 이동시 검색 제한 됨, 스크롤로 블로그 글들을 가져오는건 막히지 않는거 같음
+                await page.goto(url, timeout=10000) # 너무 빠른 페이지 이동시 검색 제한 됨, 스크롤로 블로그 글들을 가져오는건 막히지 않는거 같음
                 while True:
                     element = await page.query_selector('h3.title')
                     if element:
@@ -100,9 +100,8 @@ class BlogCrawler:
             return False
 
         async with async_playwright() as p:
-            # browser = await p.chromium.launch(headless=True)
             # chrome gpu 가속에 메모리 사용량이 너무 커서 끔
-            browser = await p.chromium.launch(headless=True, args=['--disable-gpu'])
+            browser = await p.chromium.launch(headless=False, args=['--disable-gpu'])
             context = await browser.new_context(
                 user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36')
             df_list = []

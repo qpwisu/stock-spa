@@ -176,6 +176,7 @@ def update_1M():
 
 
 def schedule():
+    print("start")
     while True:
         now = datetime.datetime.now()
         current_time = now.time()

@@ -4,10 +4,10 @@ myenv/
 ### Java ###
 # Compiled class file
 *.class
-
+nohup.out
 # Log file
 *.log
-
+.output.log.swp
 # BlueJ files
 *.ctxt
 
