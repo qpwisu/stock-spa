@@ -71,8 +71,8 @@ class BlogCrawler:
                 })
                 return df
             except Exception as e:
-                print(e)
-                print(name,date,"error")
+                # print(e)
+                # print(name,date,"error")
                 return
 
             finally:
@@ -112,7 +112,7 @@ class BlogCrawler:
                 for date in date_range:
                     futures.append(self.crawler(semaphore, context, name, date.strftime('%Y%m%d')))
 
-            for future in tqdm(asyncio.as_completed(futures), total=len(futures)):
+            for future in tqdm(asyncio.as_completed(futures), total=len(futures), disable=True):
                 tmp_df = await future
                 if tmp_df is not None:
                     df_list.append(tmp_df)

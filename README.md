@@ -59,7 +59,7 @@
 3. source myenv/bin/activate
 4. pip install requirements.txt
 5. playwright install 
-6. nohup python update.py > output.log 2>&1 &
+6. nohup python -u update.py > output.log 2>&1 &
 
 ## spring 초기 설정 
 1. cd server/stock 

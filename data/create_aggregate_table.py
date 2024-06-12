@@ -89,22 +89,14 @@ class CreateAggregateTable():
 
         df = self.connector.default_query(
             f"""
-            select sb.stock_id ,date ,count(*) as cnt 
-            from stock_blog as sb 
-            join stock_blog_stock_name as ss on sb.id = ss.stock_blog_id
-            WHERE date >= '{start_date}' AND date <= '{end_date}' 
-            group by stock_id,date ;
+            select stock_id, date, count(*) as cnt from stock_blog WHERE date >= '{start_date}'  AND date <= '{end_date}' group by stock_id, date;
             """
         )
         stock_df_list.append(df)
 
         df2 = self.connector.default_query(
             f"""
-            select tb.theme_id ,date ,count(*) as cnt 
-            from theme_blog as tb 
-            join theme_blog_stock_name as ts on tb.id = ts.theme_blog_id
-            WHERE date >= '{start_date}' AND date <= '{end_date}' 
-            group by theme_id,date ;
+            select theme_id, date, count(*) as cnt from theme_blog WHERE date >= '{start_date}'  AND date <= '{end_date}' group by theme_id, date;
             """
         )
         theme_df_list.append(df2)
@@ -164,73 +156,61 @@ class CreateAggregateTable():
         return df
 
     def MentionIncrements(self):
+        start_date = (datetime.datetime.now() - datetime.timedelta(days=2)).strftime('%Y-%m-%d')
+        end_date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
         df_s = self.connector.default_query(
         f'''
-        WITH DailyMentions AS (
-            SELECT
-                date,
-                stock_id,
-                COUNT(*) AS mentions -- 하루 동안의 언급 횟수 집계
-            FROM
-                stock_blog
-            GROUP BY
-                date, stock_id
-        ),
-        MentionsChange AS (
-            SELECT
-                stock_id,
-                date,
-                mentions,
-                LAG(mentions, 1) OVER (PARTITION BY stock_id ORDER BY date) AS previous_mentions, -- 이전 날의 언급 횟수
-                (mentions - COALESCE(LAG(mentions, 1) OVER (PARTITION BY stock_id ORDER BY date), 0)) AS mention_change -- 전날 대비 변화량 계산
-            FROM
-                DailyMentions
-        )
-        SELECT
-            stock_id,
-            MAX(mention_change) AS increase -- 가장 큰 증가량
-        FROM
-            MentionsChange
-        GROUP BY
-            stock_id
-        ORDER BY
-            increase DESC
-        LIMIT 40; -- 가장 큰 증가를 보인 stock_id  출력
+            SELECT 
+                stock_id, 
+                cnt_diff as increase
+            FROM (
+                SELECT 
+                    t1.stock_id, 
+                    t1.cnt as a, 
+                    t2.cnt as b,
+                    (t2.cnt - t1.cnt) AS cnt_diff
+                FROM
+                    (SELECT stock_id, count(*) as cnt
+                     FROM stock_blog
+                     WHERE date = '{start_date}'
+                     GROUP BY stock_id) t1
+                JOIN
+                    (SELECT stock_id, count(*) as cnt
+                     FROM stock_blog
+                     WHERE date = '{end_date}'
+                     GROUP BY stock_id) t2
+                ON t1.stock_id = t2.stock_id
+            ) AS subquery
+            ORDER BY cnt_diff DESC
+            LIMIT 40;
         ''')
 
         df_t = self.connector.default_query(
         f'''
-        WITH DailyMentions AS (
-            SELECT
-                date,
-                theme_id,
-                COUNT(*) AS mentions -- 하루 동안의 언급 횟수 집계
-            FROM
-                theme_blog
-            GROUP BY
-                date, theme_id
-        ),
-        MentionsChange AS (
-            SELECT
-                theme_id,
-                date,
-                mentions,
-                LAG(mentions, 1) OVER (PARTITION BY theme_id ORDER BY date) AS previous_mentions, -- 이전 날의 언급 횟수
-                (mentions - COALESCE(LAG(mentions, 1) OVER (PARTITION BY theme_id ORDER BY date), 0)) AS mention_change -- 전날 대비 변화량 계산
-            FROM
-                DailyMentions
-        )
-        SELECT
-            theme_id,
-            MAX(mention_change) AS increase -- 가장 큰 증가량
-        FROM
-            MentionsChange
-        GROUP BY
-            theme_id
-        ORDER BY
-            increase DESC
-        LIMIT 40; -- 가장 큰 증가를 보인 stock_id  출력
+            SELECT 
+                theme_id, 
+                cnt_diff as increase
+            FROM (
+                SELECT 
+                    t1.theme_id, 
+                    t1.cnt as a , 
+                    t2.cnt  as b,
+                    (t2.cnt - t1.cnt) AS cnt_diff
+                FROM
+                    (SELECT theme_id, count(*) as cnt
+                     FROM theme_blog
+                     WHERE date = '{start_date}'
+                     GROUP BY theme_id) t1
+                JOIN
+                    (SELECT theme_id, count(*) as cnt
+                     FROM theme_blog
+                     WHERE date = '{end_date}'
+                     GROUP BY theme_id) t2
+                ON t1.theme_id = t2.theme_id
+            ) AS subquery
+            ORDER BY cnt_diff DESC
+            LIMIT 40;
         ''')
 
         return df_s,df_t

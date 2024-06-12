@@ -195,6 +195,6 @@ def schedule():
 
 def test():
     update_1D()
-    update_1M()
-# test()
+    # update_1M()
+test()
 schedule()
