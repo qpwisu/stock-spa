@@ -214,3 +214,85 @@ class CreateAggregateTable():
         ''')
 
         return df_s,df_t
+
+
+    def suggest_month_stock(self):
+        # 현재 날짜 가져오기
+        current_date = datetime.date.today()
+        current_year = current_date.year
+        current_month = current_date.month
+
+        # 날짜 범위 계산
+        start_date_1yr = datetime.date(current_year - 1, current_month, 1)
+        end_date_1yr = datetime.date(current_year - 1, current_month + 1, 1) if current_month < 12 else datetime.date(
+            current_year, 1, 1)
+
+        start_date_2yr = datetime.date(current_year - 2, current_month, 1)
+        end_date_2yr = datetime.date(current_year - 2, current_month + 1, 1) if current_month < 12 else datetime.date(
+            current_year - 1, 1, 1)
+
+        start_date_3yr = datetime.date(current_year - 3, current_month, 1)
+        end_date_3yr = datetime.date(current_year - 3, current_month + 1, 1) if current_month < 12 else datetime.date(
+            current_year - 2, 1, 1)
+
+
+        # SQL 쿼리 작성 및 실행
+        df_now = self.connector.default_query(
+            f"""
+            SELECT 
+                stock_id,
+                COUNT(*) AS cnt,
+                0 AS month
+            FROM 
+                stock_price
+            WHERE 
+                ((date >= '{start_date_1yr}' AND date < '{end_date_1yr}') OR
+                (date >= '{start_date_2yr}' AND date < '{end_date_2yr}') OR
+                (date >= '{start_date_3yr}' AND date < '{end_date_3yr}')) and change_rate >= 8
+            GROUP BY 
+                stock_id
+            ORDER BY 
+                cnt DESC
+            limit 10;
+            """)
+
+
+
+        current_date = datetime.date.today()
+        current_year = current_date.year
+        current_month = current_date.month +1
+
+        # 날짜 범위 계산
+        start_date_1yr = datetime.date(current_year - 1, current_month, 1)
+        end_date_1yr = datetime.date(current_year - 1, current_month + 1, 1) if current_month < 12 else datetime.date(
+            current_year, 1, 1)
+
+        start_date_2yr = datetime.date(current_year - 2, current_month, 1)
+        end_date_2yr = datetime.date(current_year - 2, current_month + 1, 1) if current_month < 12 else datetime.date(
+            current_year - 1, 1, 1)
+
+        start_date_3yr = datetime.date(current_year - 3, current_month, 1)
+        end_date_3yr = datetime.date(current_year - 3, current_month + 1, 1) if current_month < 12 else datetime.date(
+            current_year - 2, 1, 1)
+
+
+        # SQL 쿼리 작성 및 실행
+        df_next = self.connector.default_query(
+            f"""
+            SELECT 
+                stock_id,
+                COUNT(*) AS cnt,
+                1 AS month
+            FROM 
+                stock_price
+            WHERE 
+                ((date >= '{start_date_1yr}' AND date < '{end_date_1yr}') OR
+                (date >= '{start_date_2yr}' AND date < '{end_date_2yr}') OR
+                (date >= '{start_date_3yr}' AND date < '{end_date_3yr}')) and change_rate >= 8
+            GROUP BY 
+                stock_id
+            ORDER BY 
+                cnt DESC
+                        limit 10;
+            """)
+        return df_now,df_next

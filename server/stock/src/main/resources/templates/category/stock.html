@@ -330,16 +330,38 @@
         close: /*[[${stock.stockPriceNow.close}]]*/ 0,
         changeRate: /*[[${stock.stockPriceNow.changeRate}]]*/ 0
     };
-
+        // open이 0이고 다른 값들이 있는 경우
+    if (currentPriceData.open === 0) {
+        const closeValue = currentPriceData.close !== 0 ? currentPriceData.close : 0; // close 값이 0인 경우 0으로 처리
+        currentPriceData.open = closeValue;
+        currentPriceData.high = closeValue;
+        currentPriceData.low = closeValue;
+    }
     // 기존 데이터에 현재 가격 데이터 추가
-    var combinedData = data.map(stockPrice => {
+    var combinedData = data.map((stockPrice, index) => {
+        let open = stockPrice.open;
+        let high = stockPrice.high;
+        let low = stockPrice.low;
+        let close = stockPrice.close;
+        let changeRate = stockPrice.changeRate;
+
+
+        const dd = data[index]; // 전날 데이터
+        if (open === 0 && dd) { // close가 0이고 이전 데이터가 있는 경우
+            open = dd.close;
+            high = dd.close;
+            low = dd.close;
+            close = dd.close;
+            changeRate = 0;
+        }
+
         return {
             x: new Date(stockPrice.date).getTime(),
-            open: stockPrice.open,
-            high: stockPrice.high,
-            low: stockPrice.low,
-            close: stockPrice.close,
-            changeRate: stockPrice.changeRate
+            open: open,
+            high: high,
+            low: low,
+            close: close,
+            changeRate: changeRate
         };
     });
     combinedData.push(currentPriceData);

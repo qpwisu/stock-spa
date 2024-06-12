@@ -43,6 +43,8 @@ public class HomeController {
         model.addAttribute("total_stock", aggregateService.getAllTotalStockAggregate());
         model.addAttribute("stock_mention_increments",aggregateService.getAllStockMentionIncrements());
         model.addAttribute("theme_mention_increments",aggregateService.getAllThemeMentionIncrements());
+        model.addAttribute("suggest_month",aggregateService.getAllSuggestMonthAggregate());
+
         return "home";
     }
 }

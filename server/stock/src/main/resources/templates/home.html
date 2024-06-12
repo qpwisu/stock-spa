@@ -221,6 +221,63 @@
                     </table>
                 </div>
             </div>
+
+
+
+            <div th:class="container">
+                <div th:class="container-content">
+                    <h5>이번달 추천 주식</h5>
+                    <table  class="styled-table">
+                        <colgroup>
+                            <col style="width: 60%;">
+                            <col style="width: 20%;">
+                            <col style="width: 20%;">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>종목명</th>
+                            <th>전날대비</th>
+                            <th>3년간 급등수</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr class="active-row" th:each="smi : ${suggest_month}" th:if="${smi.month == 0}">
+                            <td><a th:href="@{/search(category='companyName', keyword=${smi.stock.companyName})}" th:text="${smi.stock.companyName}"></a></td>
+                            <td th:text="${smi.stock.stockPriceNow.changeRate}"></td>
+                            <td th:text="${smi.cnt}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div th:class="container-content">
+                    <h5>다음달 추천 주식</h5>
+
+                    <table  class="styled-table">
+                        <colgroup>
+                            <col style="width: 60%;">
+                            <col style="width: 20%;">
+                            <col style="width: 20%;">
+
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>종목명</th>
+                            <th>전날대비</th>
+                            <th>3년간 급등수</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr class="active-row" th:each="smi : ${suggest_month}" th:if="${smi.month == 1}">
+                            <td><a th:href="@{/search(category='companyName', keyword=${smi.stock.companyName})}" th:text="${smi.stock.companyName}"></a></td>
+                            <td th:text="${smi.stock.stockPriceNow.changeRate}"></td>
+                            <td th:text="${smi.cnt}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </div>
 

@@ -23,7 +23,11 @@ public class AggregateService {
     private final StockMentionIncrementsRepository stockMentionIncrementsRepository;
     private final ThemeMentionIncrementsRepository themeMentionIncrementsRepository;
     private final RelatedStockAggregateRepository relatedStockAggregateRepository;
+    private final SuggestMonthStockRepository suggestMonthStockRepository;
 
+    public List<SuggestMonthStock> getAllSuggestMonthAggregate(){
+        return suggestMonthStockRepository.findAll();
+    }
     public List<TotalThemeAggregate> getAllTotalThemeAggregate(){
         return totalThemeAggregateRepository.findAll();
     }

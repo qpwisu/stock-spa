@@ -173,6 +173,17 @@ def update_1M():
     df = pd.read_sql_query(query, connector.engine)
     connector.update_or_insert_dataframe(df, 'theme_average_change_rate')
     connector.close()
+def update_1Month():
+    print("start update_1Month")
+    connector = MySQLDataConnector(user='root',
+                                   password='1234',
+                                   host='localhost',
+                                   database='stockdb')
+    create_aggregate_table = CreateAggregateTable(connector)
+    df_now,df_next = create_aggregate_table.suggest_month_stock()
+    connector.truncate_table("suggest_month_stock")
+    connector.upload_dataframe(df_now, 'suggest_month_stock', if_exists="append")
+    connector.upload_dataframe(df_next, 'suggest_month_stock', if_exists="append")
 
 
 def schedule():
@@ -181,6 +192,7 @@ def schedule():
         now = datetime.datetime.now()
         current_time = now.time()
         current_weekday = now.weekday()
+        current_day = now.day
 
         # 매일 00:01에 update_1D 실행
         if current_time >= datetime.time(0, 1) and current_time < datetime.time(0, 2):
@@ -189,12 +201,17 @@ def schedule():
         # 월~금 09:00 ~ 16:00 사이에 update_1M 실행
         if current_weekday < 5 and current_time >= datetime.time(9, 0) and current_time <= datetime.time(16, 0):
             update_1M()
-    
+
+        # 매달 1일에 update_1M 실행
+        if current_day == 1 and current_time >= datetime.time(9, 0) and current_time <= datetime.time(16, 0):
+            update_1Month()
+
         time.sleep(60)
 
 
 def test():
+    update_1Month()
     update_1D()
-    # update_1M()
+    update_1M()
 test()
 schedule()
