@@ -47,11 +47,13 @@
     ![theme](https://github.com/qpwisu/stock-spa/assets/28581494/2b145ee3-125e-459f-b9e2-d173430cd28e)
 
 
+## ERD 
+<img width="1516" alt="erd" src="https://github.com/qpwisu/stock-spa/assets/28581494/5eba8c8b-1ae3-4a62-9b82-62dc5206beda">
 
 ## mysql 디비 초기 설정 
 1. mysql 설치 후 create database stockdb;
 2. mysql -u root -p stockdb < stockdb_backup.sql  // 따로 다운로드
-
+## 
 ## 파이썬 크롤러 초기 설정 
 - git clone https://github.com/qpwisu/stock-spa.git
 1. cd data
@@ -71,3 +73,5 @@
 2. url에 :8081로 포트 붙혀야되는 문제 
     - 개인 네트워크에 80포트가 이미 사용중임 
 
+## 업데이트 
+- (6월 12일) 3년가 달마다 가장 8 퍼센트 이상 많이 오른 횟수가 많은 종목 추천하는 기능 추가
