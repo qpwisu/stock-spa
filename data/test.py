@@ -24,26 +24,15 @@ end_date = "20240611"
 df_kr_price = crawler.stock_price_crawler(stocks_df, start_date, end_date)
 connector.upload_dataframe(df_kr_price, 'stock_price')
 
-
-# 커서 생성
-cursor = connector.cursor()
-
 # SQL 문 실행
-create_table_sql = """
-CREATE TABLE `suggest_month_stock` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
-    `cnt` int NOT NULL,
-    `month` int NOT NULL,
-    `stock_id` BIGINT NOT NULL,
-    PRIMARY KEY (`id`),
-    CONSTRAINT `FK_stocks_TO_suggest_month_stock_1` FOREIGN KEY (`stock_id`) REFERENCES `stocks` (`id`)
-)"""
-
-cursor.execute(create_table_sql)
-
-# 변경사항 커밋
-connector.commit()
-
-# 연결 닫기
-cursor.close()
+#create_table_sql = """
+#CREATE TABLE `suggest_month_stock` (
+ #   `id` bigint NOT NULL AUTO_INCREMENT,
+  #  `cnt` int NOT NULL,
+   # `month` int NOT NULL,
+    #`stock_id` BIGINT NOT NULL,
+   # PRIMARY KEY (`id`),
+   # CONSTRAINT `FK_stocks_TO_suggest_month_stock_1` FOREIGN KEY (`stock_id`) REFERENCES `stocks` (`id`)
+#)"""
+#connector.insert_default_query(create_table_sql)
 connector.close()

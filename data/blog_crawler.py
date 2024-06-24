@@ -101,7 +101,7 @@ class BlogCrawler:
 
         async with async_playwright() as p:
             # chrome gpu 가속에 메모리 사용량이 너무 커서 끔
-            browser = await p.chromium.launch(headless=False, args=['--disable-gpu'])
+            browser = await p.chromium.launch(headless=True, args=['--disable-gpu'])
             context = await browser.new_context(
                 user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36')
             df_list = []
