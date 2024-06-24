@@ -150,7 +150,6 @@ class StockCrawler:
         df_combined["divided"] = divided_list
         df_combined["divided_rate"] = divided_rate_list
         df_combined["market"] = market_list
-        df_combined.rename(columns={"id": "stock_id"}, inplace=True)
         df_combined.drop('ticker', axis=1, inplace=True)
         df_combined.drop('company_name', axis=1, inplace=True)
 

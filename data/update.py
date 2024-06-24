@@ -30,6 +30,9 @@ def update_1D():
     tickers = connector.select_columns("stocks", ["ticker"])["ticker"].tolist()
     stocks_df = crawler.stocks_crawler(tickers)
     connector.upload_dataframe(stocks_df, 'stocks',if_exists='append')
+    l = len(stocks_df)
+    stocks_df = connector.default_query(f"select id as stock_id,ticker,company_name from stocks order by id desc limit {l}")
+
     print("2. 종목 정보 업데이트")
     stock_info_df = crawler.stock_info_crawler(stocks_df)
     connector.upload_dataframe(stock_info_df, 'stock_info',if_exists='append')
@@ -210,8 +213,9 @@ def schedule():
 
 
 def test():
-    update_1Month()
     update_1D()
     update_1M()
+    update_1Month()
+
 test()
 schedule()
